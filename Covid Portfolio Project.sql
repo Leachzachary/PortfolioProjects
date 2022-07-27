@@ -55,6 +55,7 @@ order by 1,2
 
 
 -- looking at total population vs vaccinations
+
 select  dea.continent, dea.location, dea.date, dea.population, vac.new_vaccinations
 , SUM(CONVERT(bigint, vac.new_vaccinations)) over (partition by dea.location order by dea.location,
   dea.date) as RollingPeopleVaccinated
@@ -65,7 +66,7 @@ join PortfolioProject..CovidVaccinations vac
 	where dea.continent is not null 
 	order by 2,3
 
-	-- USE CTE
+-- USE CTE
 
 With PopvsVac (Continent, Location, Date, Population, new_vaccinations, RollingPeopleVaccinated)
 as
@@ -123,5 +124,10 @@ create View InfectionRateVsPopulation as
 Select Location, MAX(total_cases) as HighestInfectionCount, Population, MAX((total_cases/population))*100 as PercentPopulationInfected
 From PortfolioProject..CovidDeaths
 group by Location, population
+
+
+Create View TotalDeathsVsTotalCases as
+Select Location, date, total_cases, total_deaths, (total_deaths/total_cases)*100 as DeathPercentage
+From PortfolioProject..CovidDeaths
 
 	
